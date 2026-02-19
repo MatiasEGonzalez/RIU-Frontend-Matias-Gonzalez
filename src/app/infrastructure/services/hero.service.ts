@@ -174,4 +174,31 @@ export class HeroService extends HeroRepository {
   private generateId(): string {
     return `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
   }
+
+  /**
+   * Reset service to initial state
+   * Used for testing purposes to ensure test isolation
+   */
+  resetToInitialState(): void {
+    this.heroesSignal.set([
+      {
+        id: '1',
+        name: 'Superman',
+        description: 'Man of Steel',
+        createdAt: new Date('2024-01-01')
+      },
+      {
+        id: '2',
+        name: 'Spiderman',
+        description: 'Your friendly neighborhood Spider-Man',
+        createdAt: new Date('2024-01-02')
+      },
+      {
+        id: '3',
+        name: 'Batman',
+        description: 'The Dark Knight',
+        createdAt: new Date('2024-01-03')
+      }
+    ]);
+  }
 }

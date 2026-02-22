@@ -19,11 +19,9 @@ import { Hero, CreateHeroDto, UpdateHeroDto } from '../../domain/models/hero.mod
 export class HeroService extends HeroRepository {
   
   /**
-   * Private signal holding all heroes
-   * Writable only from within this service
+   * Initial mock data for development and test reset
    */
-  private readonly heroesSignal = signal<Hero[]>([
-    // Mock data for development
+  private readonly INITIAL_HEROES: readonly Hero[] = [
     {
       id: '1',
       name: 'Superman',
@@ -42,7 +40,13 @@ export class HeroService extends HeroRepository {
       description: 'The Dark Knight',
       createdAt: new Date('2024-01-03')
     }
-  ]);
+  ];
+
+  /**
+   * Private signal holding all heroes
+   * Writable only from within this service
+   */
+  private readonly heroesSignal = signal<Hero[]>([...this.INITIAL_HEROES]);
 
   /**
    * Public readonly signal for consuming components
@@ -180,25 +184,6 @@ export class HeroService extends HeroRepository {
    * Used for testing purposes to ensure test isolation
    */
   resetToInitialState(): void {
-    this.heroesSignal.set([
-      {
-        id: '1',
-        name: 'Superman',
-        description: 'Man of Steel',
-        createdAt: new Date('2024-01-01')
-      },
-      {
-        id: '2',
-        name: 'Spiderman',
-        description: 'Your friendly neighborhood Spider-Man',
-        createdAt: new Date('2024-01-02')
-      },
-      {
-        id: '3',
-        name: 'Batman',
-        description: 'The Dark Knight',
-        createdAt: new Date('2024-01-03')
-      }
-    ]);
+    this.heroesSignal.set([...this.INITIAL_HEROES]);
   }
 }

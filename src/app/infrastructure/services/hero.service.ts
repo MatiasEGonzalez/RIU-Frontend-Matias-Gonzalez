@@ -68,9 +68,17 @@ export class HeroService extends HeroRepository {
   }
 
   create(dto: CreateHeroDto): Observable<Hero> {
+    const normalized = dto.name.trim().toLowerCase();
+    const duplicate = this.heroesSignal().some(
+      h => h.name.toLowerCase() === normalized
+    );
+    if (duplicate) {
+      return throwError(() => new Error(`Hero "${dto.name}" already exists`));
+    }
+
     const newHero: Hero = {
-      id: this.generateId(),
-      name: dto.name,
+      id: this.nextId(),
+      name: dto.name.trim(),
       description: dto.description,
       createdAt: new Date()
     };
@@ -88,6 +96,16 @@ export class HeroService extends HeroRepository {
 
     if (index === -1) {
       return throwError(() => new Error(`Hero with id ${id} not found`));
+    }
+
+    if (dto.name) {
+      const normalized = dto.name.trim().toLowerCase();
+      const duplicate = currentHeroes.some(
+        h => h.id !== id && h.name.toLowerCase() === normalized
+      );
+      if (duplicate) {
+        return throwError(() => new Error(`Hero "${dto.name}" already exists`));
+      }
     }
 
     const updatedHero: Hero = {
@@ -123,8 +141,12 @@ export class HeroService extends HeroRepository {
     );
   }
 
-  private generateId(): string {
-    return `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+  private nextId(): string {
+    const maxId = this.heroesSignal().reduce((max, h) => {
+      const num = parseInt(h.id, 10);
+      return isNaN(num) ? max : Math.max(max, num);
+    }, 0);
+    return String(maxId + 1);
   }
 
   /** Resets to seed data for test isolation. */

@@ -11,12 +11,15 @@ import {
   FormBuilder,
   FormGroup,
   Validators,
+  AbstractControl,
+  ValidationErrors,
 } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { Observable, map, of } from 'rxjs';
 
 import { HeroRepository } from '../../../../domain/repositories/hero.repository';
 import { LoadingService } from '../../../../infrastructure/services/loading.service';
@@ -62,6 +65,9 @@ import { UppercaseDirective } from '../../../../shared/directives/uppercase.dire
             @if (heroForm.get('name')?.hasError('minlength')) {
               <mat-error>Name must be at least 2 characters</mat-error>
             }
+            @if (heroForm.get('name')?.hasError('duplicateName')) {
+              <mat-error>A hero with this name already exists</mat-error>
+            }
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="full-width">
@@ -80,7 +86,7 @@ import { UppercaseDirective } from '../../../../shared/directives/uppercase.dire
               mat-flat-button
               color="primary"
               type="submit"
-              [disabled]="heroForm.invalid"
+              [disabled]="heroForm.invalid || heroForm.pending"
             >
               {{ isEditMode() ? 'Update' : 'Create' }}
             </button>
@@ -115,10 +121,14 @@ export class HeroFormPageComponent implements OnInit {
   readonly loadingService = inject(LoadingService);
 
   readonly isEditMode = signal(false);
-  private heroId = '';
+  heroId = '';
 
   readonly heroForm: FormGroup = this.fb.group({
-    name: ['', [Validators.required, Validators.minLength(2)]],
+    name: ['', {
+      validators: [Validators.required, Validators.minLength(2)],
+      asyncValidators: [this.duplicateNameValidator()],
+      updateOn: 'blur',
+    }],
     description: [''],
   });
 
@@ -150,6 +160,22 @@ export class HeroFormPageComponent implements OnInit {
     this.router.navigate(['/heroes']);
   }
 
+  private duplicateNameValidator(): (control: AbstractControl) => Observable<ValidationErrors | null> {
+    return (control: AbstractControl) => {
+      const name = control.value?.trim();
+      if (!name) return of(null);
+
+      return this.heroRepository.searchByName(name).pipe(
+        map(heroes => {
+          const duplicate = heroes.some(
+            h => h.name.toLowerCase() === name.toLowerCase() && h.id !== this.heroId
+          );
+          return duplicate ? { duplicateName: true } : null;
+        })
+      );
+    };
+  }
+
   private loadHero(id: string): void {
     this.loadingService.start();
     this.heroRepository.getById(id).subscribe({
@@ -173,6 +199,7 @@ export class HeroFormPageComponent implements OnInit {
       .create({ name, description: description || undefined })
       .subscribe({
         next: () => this.router.navigate(['/heroes']),
+        error: () => this.loadingService.stop(),
         complete: () => this.loadingService.stop(),
       });
   }
@@ -183,6 +210,7 @@ export class HeroFormPageComponent implements OnInit {
       .update(this.heroId, { name, description: description || undefined })
       .subscribe({
         next: () => this.router.navigate(['/heroes']),
+        error: () => this.loadingService.stop(),
         complete: () => this.loadingService.stop(),
       });
   }

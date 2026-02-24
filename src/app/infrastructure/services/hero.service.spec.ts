@@ -97,6 +97,18 @@ describe('HeroService', () => {
       expect(hero.createdAt).toBeInstanceOf(Date);
     });
 
+    it('should generate sequential numeric ids', async () => {
+      const hero = await firstValueFrom(
+        service.create({ name: 'Flash' })
+      );
+      expect(hero.id).toBe('4');
+
+      const hero2 = await firstValueFrom(
+        service.create({ name: 'Aquaman' })
+      );
+      expect(hero2.id).toBe('5');
+    });
+
     it('should add hero to the signal state', async () => {
       const dto: CreateHeroDto = {
         name: 'Flash',
@@ -105,7 +117,7 @@ describe('HeroService', () => {
 
       await firstValueFrom(service.create(dto));
       const heroes = await firstValueFrom(service.getAll());
-      expect(heroes.length).toBe(4); // 3 initial + 1 new
+      expect(heroes.length).toBe(4);
       const flash = heroes.find(h => h.name === 'Flash');
       expect(flash).toBeDefined();
     });
@@ -118,6 +130,33 @@ describe('HeroService', () => {
       const hero = await firstValueFrom(service.create(dto));
       expect(hero.name).toBe('Aquaman');
       expect(hero.description).toBeUndefined();
+    });
+
+    it('should reject duplicate hero names (case-insensitive)', async () => {
+      try {
+        await firstValueFrom(service.create({ name: 'superman' }));
+        throw new Error('Should have thrown');
+      } catch (error: any) {
+        expect(error.message).toContain('already exists');
+      }
+    });
+
+    it('should reject duplicate hero names with different casing', async () => {
+      try {
+        await firstValueFrom(service.create({ name: 'BATMAN' }));
+        throw new Error('Should have thrown');
+      } catch (error: any) {
+        expect(error.message).toContain('already exists');
+      }
+    });
+
+    it('should trim name before checking duplicates', async () => {
+      try {
+        await firstValueFrom(service.create({ name: '  Superman  ' }));
+        throw new Error('Should have thrown');
+      } catch (error: any) {
+        expect(error.message).toContain('already exists');
+      }
     });
   });
 
@@ -170,6 +209,22 @@ describe('HeroService', () => {
       await firstValueFrom(service.update('1', dto));
       const hero = await firstValueFrom(service.getById('1'));
       expect(hero?.name).toBe('Updated Name');
+    });
+
+    it('should reject update if name conflicts with another hero', async () => {
+      try {
+        await firstValueFrom(service.update('1', { name: 'Batman' }));
+        throw new Error('Should have thrown');
+      } catch (error: any) {
+        expect(error.message).toContain('already exists');
+      }
+    });
+
+    it('should allow update keeping the same name on the same hero', async () => {
+      const hero = await firstValueFrom(
+        service.update('1', { name: 'Superman' })
+      );
+      expect(hero.name).toBe('Superman');
     });
   });
 

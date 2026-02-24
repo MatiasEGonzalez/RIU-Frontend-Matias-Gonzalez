@@ -4,9 +4,9 @@ import { HeroTableComponent } from './hero-table.component';
 import { Hero } from '../../../../domain/models/hero.model';
 
 const MOCK_HEROES: Hero[] = [
-  { id: '1', name: 'Superman', description: 'Man of Steel', createdAt: new Date() },
-  { id: '2', name: 'Batman', description: 'Dark Knight', createdAt: new Date() },
-  { id: '3', name: 'Wonder Woman', createdAt: new Date() },
+  { id: '1', name: 'Superman' },
+  { id: '2', name: 'Batman' },
+  { id: '3', name: 'Wonder Woman' },
 ];
 
 describe('HeroTableComponent', () => {

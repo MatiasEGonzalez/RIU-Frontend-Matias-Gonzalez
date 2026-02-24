@@ -9,12 +9,12 @@ import { HeroRepository } from '../../../../domain/repositories/hero.repository'
 import { Hero } from '../../../../domain/models/hero.model';
 
 const MOCK_HEROES: Hero[] = [
-  { id: '1', name: 'Superman', description: 'Man of Steel', createdAt: new Date() },
-  { id: '2', name: 'Batman', description: 'Dark Knight', createdAt: new Date() },
-  { id: '3', name: 'Spiderman', description: 'Web Slinger', createdAt: new Date() },
-  { id: '4', name: 'Wonder Woman', createdAt: new Date() },
-  { id: '5', name: 'Flash', description: 'Fastest Man Alive', createdAt: new Date() },
-  { id: '6', name: 'Aquaman', createdAt: new Date() },
+  { id: '1', name: 'Superman' },
+  { id: '2', name: 'Batman' },
+  { id: '3', name: 'Spiderman' },
+  { id: '4', name: 'Wonder Woman' },
+  { id: '5', name: 'Flash' },
+  { id: '6', name: 'Aquaman' },
 ];
 
 function createMockHeroRepository() {

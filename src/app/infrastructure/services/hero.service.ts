@@ -14,24 +14,9 @@ import { Hero, CreateHeroDto, UpdateHeroDto } from '../../domain/models/hero.mod
 export class HeroService extends HeroRepository {
 
   private readonly INITIAL_HEROES: readonly Hero[] = [
-    {
-      id: '1',
-      name: 'Superman',
-      description: 'Man of Steel',
-      createdAt: new Date('2024-01-01')
-    },
-    {
-      id: '2',
-      name: 'Spiderman',
-      description: 'Your friendly neighborhood Spider-Man',
-      createdAt: new Date('2024-01-02')
-    },
-    {
-      id: '3',
-      name: 'Batman',
-      description: 'The Dark Knight',
-      createdAt: new Date('2024-01-03')
-    }
+    { id: '1', name: 'Superman' },
+    { id: '2', name: 'Spiderman' },
+    { id: '3', name: 'Batman' },
   ];
 
   private readonly heroesSignal = signal<Hero[]>([...this.INITIAL_HEROES]);
@@ -79,8 +64,6 @@ export class HeroService extends HeroRepository {
     const newHero: Hero = {
       id: this.nextId(),
       name: dto.name.trim(),
-      description: dto.description,
-      createdAt: new Date()
     };
 
     this.heroesSignal.update(heroes => [...heroes, newHero]);

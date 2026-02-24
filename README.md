@@ -16,11 +16,26 @@ El foco estuvo en arquitectura, testing y decisiones técnicas justificadas; la 
 
 ```bash
 npm install
-ng serve          # http://localhost:4200
-ng test           # 107 unit tests
-ng test --watch=false # CI mode
-ng build          # production build
+ng serve               # http://localhost:4200
+ng test                # 113 unit tests
+ng test --watch=false  # CI mode
+ng build               # production build
 ```
+
+## Docker
+
+```bash
+# Build and run with Docker Compose (recommended)
+docker compose up --build   # http://localhost:4200
+
+# Or manually
+docker build -t hero-manager .
+docker run -p 4200:80 hero-manager
+```
+
+Multi-stage build: **Node 22 Alpine** compila la app, **nginx:Alpine** sirve los estáticos. La imagen final no contiene el toolchain de Node, manteniendo el tamaño mínimo.
+
+> Para entornos que prohíben procesos root, sustituir `nginx:alpine` por `nginxinc/nginx-unprivileged` y ajustar el puerto interno a `8080`.
 
 ## Arquitectura
 
@@ -84,17 +99,17 @@ Registrado con `withInterceptors([loadingInterceptor])`. Preparado para un backe
 
 ## Tests
 
-107 unit tests distribuidos en 10 spec files:
+113 unit tests distribuidos en 10 spec files:
 
 | Capa | Archivo | Tests |
 |------|---------|-------|
-| Domain | `hero.service.spec.ts` | 25 |
+| Domain | `hero.service.spec.ts` | 31 |
 | UI | `hero-list-page.component.spec.ts` | 15 |
 | UI | `hero-table.component.spec.ts` | 10 |
-| UI | `hero-form-page.component.spec.ts` | 9 |
+| UI | `hero-form-page.component.spec.ts` | 18 |
 | Shared | `confirm-dialog.component.spec.ts` | 8 |
 | Shared | `uppercase.directive.spec.ts` | 10 |
-| Shared | `hero-search.component.spec.ts` | 7 |
+| Shared | `hero-search.component.spec.ts` | 6 |
 | Infra | `loading.service.spec.ts` | 8 |
 | Infra | `loading.interceptor.spec.ts` | 4 |
 | Root | `app.spec.ts` | 3 |

@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+
+# Build artifacts (rebuilt inside Docker)
+dist/
+.angular/
+
+# Test & coverage output
+coverage/
+
+# Git
+.git/
+.gitignore
+
+# Editor
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*

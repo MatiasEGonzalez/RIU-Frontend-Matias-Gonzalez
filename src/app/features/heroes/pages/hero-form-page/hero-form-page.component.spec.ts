@@ -11,8 +11,6 @@ import { Hero } from '../../../../domain/models/hero.model';
 const EXISTING_HERO: Hero = {
   id: '1',
   name: 'SUPERMAN',
-  description: 'Man of Steel',
-  createdAt: new Date(),
 };
 
 function createMockHeroRepository() {
@@ -73,7 +71,6 @@ describe('HeroFormPageComponent (create mode)', () => {
 
   it('should have an empty form initially', () => {
     expect(component.heroForm.get('name')?.value).toBe('');
-    expect(component.heroForm.get('description')?.value).toBe('');
   });
 
   // ─── Validations ────────────────────────────────────────────────────────
@@ -95,11 +92,6 @@ describe('HeroFormPageComponent (create mode)', () => {
     expect(component.heroForm.get('name')?.valid).toBe(true);
   });
 
-  it('should not require description', () => {
-    component.heroForm.get('name')?.setValue('Superman');
-    expect(component.heroForm.valid).toBe(true);
-  });
-
   // ─── Save ───────────────────────────────────────────────────────────────
 
   it('should not call create if form is invalid', () => {
@@ -108,27 +100,14 @@ describe('HeroFormPageComponent (create mode)', () => {
   });
 
   it('should call create with form values', () => {
-    component.heroForm.setValue({ name: 'Flash', description: 'Fast' });
+    component.heroForm.setValue({ name: 'Flash' });
     component.onSave();
 
-    expect(mockRepo.create).toHaveBeenCalledWith({
-      name: 'Flash',
-      description: 'Fast',
-    });
-  });
-
-  it('should call create with undefined description when empty', () => {
-    component.heroForm.setValue({ name: 'Flash', description: '' });
-    component.onSave();
-
-    expect(mockRepo.create).toHaveBeenCalledWith({
-      name: 'Flash',
-      description: undefined,
-    });
+    expect(mockRepo.create).toHaveBeenCalledWith({ name: 'Flash' });
   });
 
   it('should navigate to /heroes after successful create', () => {
-    component.heroForm.setValue({ name: 'Flash', description: '' });
+    component.heroForm.setValue({ name: 'Flash' });
     component.onSave();
 
     expect(router.navigate).toHaveBeenCalledWith(['/heroes']);
@@ -183,24 +162,20 @@ describe('HeroFormPageComponent (edit mode)', () => {
     expect(mockRepo.getById).toHaveBeenCalledWith('1');
   });
 
-  it('should populate form with hero data', () => {
+  it('should populate form with hero name', () => {
     expect(component.heroForm.get('name')?.value).toBe('SUPERMAN');
-    expect(component.heroForm.get('description')?.value).toBe('Man of Steel');
   });
 
   it('should call update (not create) on save', () => {
-    component.heroForm.setValue({ name: 'SUPERMAN II', description: 'Updated' });
+    component.heroForm.setValue({ name: 'SUPERMAN II' });
     component.onSave();
 
-    expect(mockRepo.update).toHaveBeenCalledWith('1', {
-      name: 'SUPERMAN II',
-      description: 'Updated',
-    });
+    expect(mockRepo.update).toHaveBeenCalledWith('1', { name: 'SUPERMAN II' });
     expect(mockRepo.create).not.toHaveBeenCalled();
   });
 
   it('should navigate to /heroes after successful update', () => {
-    component.heroForm.setValue({ name: 'SUPERMAN II', description: 'Updated' });
+    component.heroForm.setValue({ name: 'SUPERMAN II' });
     component.onSave();
 
     expect(router.navigate).toHaveBeenCalledWith(['/heroes']);

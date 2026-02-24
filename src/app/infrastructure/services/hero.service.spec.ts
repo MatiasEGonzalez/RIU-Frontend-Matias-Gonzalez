@@ -30,7 +30,6 @@ describe('HeroService', () => {
       const hero = heroes[0];
       expect(hero.id).toBeDefined();
       expect(hero.name).toBeDefined();
-      expect(hero.createdAt).toBeInstanceOf(Date);
     });
   });
 
@@ -85,51 +84,26 @@ describe('HeroService', () => {
 
   describe('create', () => {
     it('should create a new hero with generated id', async () => {
-      const dto: CreateHeroDto = {
-        name: 'Wonder Woman',
-        description: 'Amazon Princess'
-      };
+      const dto: CreateHeroDto = { name: 'Wonder Woman' };
 
       const hero = await firstValueFrom(service.create(dto));
       expect(hero.id).toBeDefined();
       expect(hero.name).toBe('Wonder Woman');
-      expect(hero.description).toBe('Amazon Princess');
-      expect(hero.createdAt).toBeInstanceOf(Date);
     });
 
     it('should generate sequential numeric ids', async () => {
-      const hero = await firstValueFrom(
-        service.create({ name: 'Flash' })
-      );
+      const hero = await firstValueFrom(service.create({ name: 'Flash' }));
       expect(hero.id).toBe('4');
 
-      const hero2 = await firstValueFrom(
-        service.create({ name: 'Aquaman' })
-      );
+      const hero2 = await firstValueFrom(service.create({ name: 'Aquaman' }));
       expect(hero2.id).toBe('5');
     });
 
     it('should add hero to the signal state', async () => {
-      const dto: CreateHeroDto = {
-        name: 'Flash',
-        description: 'The Fastest Man Alive'
-      };
-
-      await firstValueFrom(service.create(dto));
+      await firstValueFrom(service.create({ name: 'Flash' }));
       const heroes = await firstValueFrom(service.getAll());
       expect(heroes.length).toBe(4);
-      const flash = heroes.find(h => h.name === 'Flash');
-      expect(flash).toBeDefined();
-    });
-
-    it('should create hero without description', async () => {
-      const dto: CreateHeroDto = {
-        name: 'Aquaman'
-      };
-
-      const hero = await firstValueFrom(service.create(dto));
-      expect(hero.name).toBe('Aquaman');
-      expect(hero.description).toBeUndefined();
+      expect(heroes.find(h => h.name === 'Flash')).toBeDefined();
     });
 
     it('should reject duplicate hero names (case-insensitive)', async () => {
@@ -162,53 +136,25 @@ describe('HeroService', () => {
 
   describe('update', () => {
     it('should update hero name', async () => {
-      const dto: UpdateHeroDto = {
-        name: 'Clark Kent'
-      };
+      const dto: UpdateHeroDto = { name: 'Clark Kent' };
 
       const hero = await firstValueFrom(service.update('1', dto));
       expect(hero.name).toBe('Clark Kent');
-      expect(hero.description).toBe('Man of Steel'); // unchanged
     });
 
-    it('should update hero description', async () => {
-      const dto: UpdateHeroDto = {
-        description: 'Updated description'
-      };
-
-      const hero = await firstValueFrom(service.update('1', dto));
-      expect(hero.name).toBe('Superman'); // unchanged
-      expect(hero.description).toBe('Updated description');
-    });
-
-    it('should update multiple fields', async () => {
-      const dto: UpdateHeroDto = {
-        name: 'Peter Parker',
-        description: 'Teenager with spider powers'
-      };
-
-      const hero = await firstValueFrom(service.update('2', dto));
-      expect(hero.name).toBe('Peter Parker');
-      expect(hero.description).toBe('Teenager with spider powers');
+    it('should persist update in state', async () => {
+      await firstValueFrom(service.update('1', { name: 'Updated Name' }));
+      const hero = await firstValueFrom(service.getById('1'));
+      expect(hero?.name).toBe('Updated Name');
     });
 
     it('should throw error when hero not found', async () => {
-      const dto: UpdateHeroDto = { name: 'Test' };
-      
       try {
-        await firstValueFrom(service.update('non-existent', dto));
+        await firstValueFrom(service.update('non-existent', { name: 'Test' }));
         throw new Error('Should have thrown error');
       } catch (error: any) {
         expect(error.message).toContain('not found');
       }
-    });
-
-    it('should persist update in state', async () => {
-      const dto: UpdateHeroDto = { name: 'Updated Name' };
-
-      await firstValueFrom(service.update('1', dto));
-      const hero = await firstValueFrom(service.getById('1'));
-      expect(hero?.name).toBe('Updated Name');
     });
 
     it('should reject update if name conflicts with another hero', async () => {
@@ -221,9 +167,7 @@ describe('HeroService', () => {
     });
 
     it('should allow update keeping the same name on the same hero', async () => {
-      const hero = await firstValueFrom(
-        service.update('1', { name: 'Superman' })
-      );
+      const hero = await firstValueFrom(service.update('1', { name: 'Superman' }));
       expect(hero.name).toBe('Superman');
     });
   });
@@ -262,15 +206,12 @@ describe('HeroService', () => {
 
     it('should update signal when creating hero', async () => {
       const initialCount = service.heroes().length;
-      const dto: CreateHeroDto = { name: 'New Hero' };
-
-      await firstValueFrom(service.create(dto));
+      await firstValueFrom(service.create({ name: 'New Hero' }));
       expect(service.heroes().length).toBe(initialCount + 1);
     });
 
     it('should update signal when deleting hero', async () => {
       const initialCount = service.heroes().length;
-
       await firstValueFrom(service.delete('1'));
       expect(service.heroes().length).toBe(initialCount - 1);
     });

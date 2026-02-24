@@ -70,16 +70,6 @@ import { UppercaseDirective } from '../../../../shared/directives/uppercase.dire
             }
           </mat-form-field>
 
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Description</mat-label>
-            <textarea
-              matInput
-              formControlName="description"
-              placeholder="Hero's backstory..."
-              rows="4"
-            ></textarea>
-          </mat-form-field>
-
           <div class="form-actions">
             <button mat-button type="button" (click)="onCancel()">Cancel</button>
             <button
@@ -129,7 +119,6 @@ export class HeroFormPageComponent implements OnInit {
       asyncValidators: [this.duplicateNameValidator()],
       updateOn: 'blur',
     }],
-    description: [''],
   });
 
   ngOnInit(): void {
@@ -147,12 +136,12 @@ export class HeroFormPageComponent implements OnInit {
       return;
     }
 
-    const { name, description } = this.heroForm.getRawValue();
+    const { name } = this.heroForm.getRawValue();
 
     if (this.isEditMode()) {
-      this.updateHero(name, description);
+      this.updateHero(name);
     } else {
-      this.createHero(name, description);
+      this.createHero(name);
     }
   }
 
@@ -181,10 +170,7 @@ export class HeroFormPageComponent implements OnInit {
     this.heroRepository.getById(id).subscribe({
       next: (hero) => {
         if (hero) {
-          this.heroForm.patchValue({
-            name: hero.name,
-            description: hero.description ?? '',
-          });
+          this.heroForm.patchValue({ name: hero.name });
         } else {
           this.router.navigate(['/heroes']);
         }
@@ -193,10 +179,10 @@ export class HeroFormPageComponent implements OnInit {
     });
   }
 
-  private createHero(name: string, description: string): void {
+  private createHero(name: string): void {
     this.loadingService.start();
     this.heroRepository
-      .create({ name, description: description || undefined })
+      .create({ name })
       .subscribe({
         next: () => this.router.navigate(['/heroes']),
         error: () => this.loadingService.stop(),
@@ -204,10 +190,10 @@ export class HeroFormPageComponent implements OnInit {
       });
   }
 
-  private updateHero(name: string, description: string): void {
+  private updateHero(name: string): void {
     this.loadingService.start();
     this.heroRepository
-      .update(this.heroId, { name, description: description || undefined })
+      .update(this.heroId, { name })
       .subscribe({
         next: () => this.router.navigate(['/heroes']),
         error: () => this.loadingService.stop(),

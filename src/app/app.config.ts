@@ -7,16 +7,7 @@ import { HeroRepository } from './domain/repositories/hero.repository';
 import { HeroService } from './infrastructure/services/hero.service';
 import { loadingInterceptor } from './infrastructure/interceptors/loading.interceptor';
 
-/**
- * Application-level providers.
- *
- * provideAnimations() is intentionally omitted — deprecated since Angular 20.2
- * (intent to remove in v23). Angular Material 21 injects ANIMATION_MODULE_TYPE
- * as optional, so it works without the legacy animation renderer. In that case,
- * Material gracefully degrades its animations to CSS transitions.
- * For custom animations, Angular 21 offers per-component template bindings
- * (animate.enter / animate.leave) instead of global providers.
- */
+/** Root-level DI configuration. */
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),

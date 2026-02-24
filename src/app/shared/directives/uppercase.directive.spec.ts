@@ -3,14 +3,6 @@ import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { ReactiveFormsModule, FormControl, FormGroup } from '@angular/forms';
 import { UppercaseDirective } from './uppercase.directive';
 
-// ─── Test Host Components ─────────────────────────────────────────────────────
-// We use "test host components" because attribute directives don't have
-// their own template — they need a host element to function.
-
-/**
- * Host with Reactive Forms: verifies the directive synchronizes
- * both the DOM and the FormControl.
- */
 @Component({
   imports: [ReactiveFormsModule, UppercaseDirective],
   template: `
@@ -25,17 +17,11 @@ class TestHostWithFormComponent {
   });
 }
 
-/**
- * Host without Reactive Forms: verifies the directive
- * works even without NgControl (DOM transform only).
- */
 @Component({
   imports: [UppercaseDirective],
   template: `<input appUppercase />`,
 })
 class TestHostWithoutFormComponent {}
-
-// ─── Tests ────────────────────────────────────────────────────────────────────
 
 describe('UppercaseDirective', () => {
 
@@ -116,9 +102,7 @@ describe('UppercaseDirective', () => {
       simulateInput(input, 'flash');
       fixture.detectChanges();
 
-      // The 'input' event triggers 1 native emission (DefaultValueAccessor → FormControl).
-      // The directive calls setValue with emitEvent: false, so it does NOT add another.
-      // Expected total: 1 (native only), NOT 2.
+      // Only 1 emission (native), not 2 — setValue uses emitEvent: false
       expect(emissionCount).toBe(1);
     });
   });
@@ -153,12 +137,6 @@ describe('UppercaseDirective', () => {
   });
 });
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-/**
- * Simulates a real text input on an HTML input element.
- * Sets the value and dispatches the 'input' event that the directive listens to.
- */
 function simulateInput(input: HTMLInputElement, value: string): void {
   input.value = value;
   input.dispatchEvent(new Event('input'));

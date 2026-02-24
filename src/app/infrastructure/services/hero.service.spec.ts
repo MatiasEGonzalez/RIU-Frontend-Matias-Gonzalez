@@ -9,7 +9,6 @@ describe('HeroService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({});
     service = TestBed.inject(HeroService);
-    // Reset service state before each test to ensure isolation
     service.resetToInitialState();
   });
 

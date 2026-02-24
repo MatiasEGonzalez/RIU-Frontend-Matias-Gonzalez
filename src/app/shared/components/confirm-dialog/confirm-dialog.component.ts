@@ -6,26 +6,13 @@ import {
   MatDialogRef,
 } from '@angular/material/dialog';
 
-/**
- * Data contract for ConfirmDialogComponent.
- * Callers pass this object via MAT_DIALOG_DATA.
- */
+/** Data contract for ConfirmDialogComponent. */
 export interface ConfirmDialogData {
   readonly title: string;
   readonly message: string;
 }
 
-/**
- * Reusable confirmation dialog using Angular Material.
- *
- * Usage:
- *   const ref = this.dialog.open(ConfirmDialogComponent, {
- *     data: { title: 'Delete hero', message: 'Are you sure?' }
- *   });
- *   ref.afterClosed().subscribe(confirmed => { ... });
- *
- * Returns true when confirmed, false (or undefined) when cancelled.
- */
+/** Reusable confirmation dialog. Returns true on confirm, false on cancel. */
 @Component({
   selector: 'app-confirm-dialog',
   standalone: true,

@@ -1,13 +1,6 @@
 import { Routes } from '@angular/router';
 
-/**
- * Hero Feature Routes
- *
- * Route order matters: static paths ('/new') must come before
- * parameterized paths ('/:id') to avoid 'new' being captured as an ID.
- *
- * All components are lazy-loaded via dynamic import() for optimal code splitting.
- */
+/** Static paths before parameterized to avoid capturing 'new' as :id. */
 export const heroesRoutes: Routes = [
   {
     path: '',

@@ -1,7 +1,4 @@
-/**
- * Hero entity - Core domain model
- * Represents a superhero in the system
- */
+/** Core domain entity. */
 export interface Hero {
   readonly id: string;
   readonly name: string;
@@ -9,19 +6,13 @@ export interface Hero {
   readonly createdAt: Date;
 }
 
-/**
- * DTO for creating a new hero
- * The system generates id and createdAt
- */
+/** DTO for hero creation — id and createdAt are system-generated. */
 export interface CreateHeroDto {
   readonly name: string;
   readonly description?: string;
 }
 
-/**
- * DTO for updating an existing hero
- * All fields are optional (partial update)
- */
+/** DTO for partial hero updates. */
 export interface UpdateHeroDto {
   readonly name?: string;
   readonly description?: string;
